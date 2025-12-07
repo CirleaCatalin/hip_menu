@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hip_menu/models/meal.dart';
 import 'package:hip_menu/screens/categories_screen.dart';
+import 'package:hip_menu/screens/filters_screen.dart';
 import 'package:hip_menu/screens/meals_screen.dart';
+import 'package:hip_menu/widgets/main_drawer.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -11,7 +14,19 @@ class TabsScreen extends StatefulWidget {
 
 class _TabsScreenState extends State<TabsScreen> {
   int _currentPage = 0;
-  var _activePageTitle = "Categories";
+  final List<Meal> _favouriteMeals = [];
+
+  void _toggleMealFavourite(Meal meal) {
+    final isExisting = _favouriteMeals.contains(meal);
+
+    isExisting
+        ? setState(() {
+            _favouriteMeals.remove(meal);
+          })
+        : setState(() {
+            _favouriteMeals.add(meal);
+          });
+  }
 
   void _selectPage(int page) {
     setState(() {
@@ -19,17 +34,34 @@ class _TabsScreenState extends State<TabsScreen> {
     });
   }
 
-  Widget activePage = const CategoriesScreen();
+  void setScreen(String identifier) {
+    Navigator.of(context).pop();
+    if (identifier == 'filters') {
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (ctx) => FiltersScreen()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    var activePageTitle = "Categories";
+
+    Widget activePage = CategoriesScreen(
+      onToggleFavourite: _toggleMealFavourite,
+    );
+
     if (_currentPage == 1) {
-      activePage = const MealsScreen(meals: []);
-      _activePageTitle = "Favorites";
+      activePage = MealsScreen(
+        meals: _favouriteMeals,
+        onToggleFavourite: _toggleMealFavourite,
+      );
+      activePageTitle = "Favorites";
     }
     return Scaffold(
-      appBar: AppBar(title: Text(_activePageTitle)),
+      appBar: AppBar(title: Text(activePageTitle)),
       body: activePage,
+      drawer: MainDrawer(onSelectScreen: setScreen),
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
         currentIndex: _currentPage,

@@ -4,14 +4,25 @@ import 'package:hip_menu/screens/meal_description_screen.dart';
 import 'package:hip_menu/widgets/meal_item.dart';
 
 class MealsScreen extends StatelessWidget {
-  const MealsScreen({super.key, this.title, required this.meals});
+  const MealsScreen({
+    super.key,
+    this.title,
+    required this.meals,
+    required this.onToggleFavourite,
+  });
 
   final String? title;
   final List<Meal> meals;
+  final void Function(Meal meal) onToggleFavourite;
 
   void goToMealDescription(BuildContext context, Meal meal) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (ctx) => MealDescriptionScreen(meal: meal)),
+      MaterialPageRoute(
+        builder: (ctx) => MealDescriptionScreen(
+          meal: meal,
+          onToggleFavourite: onToggleFavourite,
+        ),
+      ),
     );
   }
 
